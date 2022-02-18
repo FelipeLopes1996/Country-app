@@ -3,7 +3,7 @@ import styled, { css } from "styled-components";
 export const WrapperButton = styled.div`
   ${({ theme }) => css`
     width: 100%;
-    padding: 3rem 0 3rem 7.2rem;
+    padding: 3rem 0 1.3rem 7.2rem;
     background-color: ${theme.bg.white};
     transition: ease-in-out 400ms;
 
