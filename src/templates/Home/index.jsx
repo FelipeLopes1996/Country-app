@@ -8,6 +8,7 @@ import { CountryNotFound } from "../../components/CountryNotFound";
 
 import { fetchAllCountries } from "../../services/serviceCoutries";
 import { filterCoutryName, filterRegionName } from "../../utils/filters";
+import { Pagination } from "../../components/Pagination";
 
 export const Home = () => {
   const [allCountries, setAllCountries] = useState([]);
@@ -15,6 +16,9 @@ export const Home = () => {
   const [region, setRegion] = useState("");
   const [isRegion, setIsRegion] = useState(false);
   const [isLoad, setIsLoad] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const [countriesPerPage] = useState(8);
 
   const getCountries = async () => {
     const result = await fetchAllCountries();
@@ -59,6 +63,15 @@ export const Home = () => {
     filterCountryNameRegion,
     isRegion,
   ]);
+
+  const pages = Math.ceil(returnValue?.length / countriesPerPage);
+  const startIndex = currentPage * countriesPerPage;
+  const endIndex = startIndex + countriesPerPage;
+  const currentCountries = returnValue?.slice(startIndex, endIndex);
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [countriesPerPage]);
   return (
     <>
       <GridFilters>
@@ -66,6 +79,7 @@ export const Home = () => {
           value={search}
           onInputChange={(v) => {
             setSearch(v);
+            setCurrentPage(0);
           }}
           placeholder="Search for a country"
         />
@@ -74,11 +88,12 @@ export const Home = () => {
           onSelectChange={(v) => {
             setIsRegion(true);
             setRegion(v);
+            setCurrentPage(0);
           }}
         />
       </GridFilters>
       <GridCards>
-        {returnValue?.map((country, i) => (
+        {currentCountries?.map((country, i) => (
           <Card
             key={i}
             countryImg={country.flags.png}
@@ -90,6 +105,13 @@ export const Home = () => {
         ))}
         {isLoad && returnValue.length === 0 && <CountryNotFound />}
       </GridCards>
+      {isLoad && (
+        <Pagination
+          pages={pages}
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
+        />
+      )}
     </>
   );
 };
